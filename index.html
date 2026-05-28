@@ -30,8 +30,8 @@
       </div>
       <div class="tray-grid"><!-- populated by game.js --></div>
       <div class="tray-actions">
-        <button class="btn btn--ghost" disabled>Log to Catalogue</button>
-        <button class="btn btn--ghost" disabled>Discard</button>
+        <button class="btn btn--ghost" id="btn-hint" disabled>Request Hint</button>
+        <button class="btn btn--primary" id="btn-new-trench">New Trench</button>
       </div>
     </aside>
 
@@ -64,6 +64,8 @@
         </div>
         <span class="progress-label">0 / 20 cells</span>
       </div>
+
+      <ul class="field-notes-log" id="field-notes-log" aria-live="polite" aria-relevant="additions"></ul>
 
       <div class="site-status">
         <span class="status-item">Site: <strong class="js-site-name">—</strong></span>
@@ -107,6 +109,9 @@
       <p class="portrait-lock__sub">Cloddio requires landscape orientation</p>
     </div>
   </div>
+
+  <!-- Toast notification container -->
+  <div id="toast-container" aria-live="assertive" aria-atomic="true"></div>
 
   <script src="data.js"></script>
   <script src="game.js"></script>

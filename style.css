@@ -815,6 +815,78 @@ button:disabled { cursor: default; }
   border-style: solid;
 }
 
+/* --- Field notes log --- */
+.field-notes-log {
+  list-style: none;
+  flex-shrink: 0;
+  overflow-y: auto;
+  max-height: 96px;
+  padding: var(--sp-2) var(--sp-4);
+  border-top: 1px solid var(--clr-border);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--clr-bg);
+}
+
+.note {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  line-height: 1.5;
+  color: var(--clr-text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.note--find    { color: var(--clr-ochre-dim); }
+.note--correct { color: var(--clr-accent-find); }
+.note--wrong   { color: var(--clr-accent-danger); }
+.note--hint    { color: var(--clr-accent-feature); }
+.note--bonus   { color: var(--clr-ochre); font-weight: bold; }
+.note--system  { color: var(--clr-text-faint); font-style: italic; }
+
+/* --- Toast notifications --- */
+#toast-container {
+  position: fixed;
+  bottom: var(--sp-6);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 800;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--sp-2);
+  align-items: center;
+  pointer-events: none;
+}
+
+.toast {
+  padding: var(--sp-2) var(--sp-5);
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border-light);
+  color: var(--clr-text);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  max-width: 420px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.toast--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast--success { border-color: var(--clr-accent-find);    color: var(--clr-accent-find); }
+.toast--error   { border-color: var(--clr-accent-danger);  color: var(--clr-accent-danger); }
+.toast--ochre   { border-color: var(--clr-ochre-dim);      color: var(--clr-ochre); }
+.toast--hint    { border-color: var(--clr-accent-feature); color: var(--clr-accent-feature); }
+.toast--info    { border-color: var(--clr-border-light);   color: var(--clr-text-dim); }
+
 /* --- Portrait lock overlay --- */
 .portrait-lock {
   display: none;

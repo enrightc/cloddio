@@ -40,6 +40,10 @@ function initGame() {
   state.penalised  = new Set();
   state.cells      = buildCells(state.site);
 
+  // Clear notes log from previous trench
+  const log = document.getElementById('field-notes-log');
+  if (log) log.innerHTML = '';
+
   renderSiteMeta();
   renderStratigraphyLabels();
   renderGrid();
@@ -47,11 +51,11 @@ function initGame() {
   renderCataloguePeriodSlots();
   updateProgress();
   updateScore();
+  updateHintButton();
 
+  addNote('system', `— Trench opened at ${state.site.label} (${state.site.location})`);
   console.log(`[Cloddio] Game started — "${state.site.label}" (${state.site.location})`);
-  console.log(
-    `[Cloddio] ${state.cells.filter(c => c.artefactId).length} finds hidden across ${TOTAL_CELLS} cells`
-  );
+  console.log(`[Cloddio] ${state.cells.filter(c => c.artefactId).length} finds hidden across ${TOTAL_CELLS} cells`);
 }
 
 // ─── Cell construction ────────────────────────────────────────────────────────
@@ -224,15 +228,13 @@ function handleCellClick(cellId) {
     cell.state = 'found';
     state.found++;
     const artefact = getArtefact(cell.artefactId);
-    console.log(
-      `[Cloddio] Find! ${artefact.label} · ${artefact.rarity} · ` +
-      `${artefact.points} pts · ${getPeriod(artefact.periodId)?.label}`
-    );
+    addNote('find', `▲ Found: ${artefact.icon} ${artefact.label} [${getPeriod(artefact.periodId)?.label}]`);
     renderTray();
+    updateHintButton();
     openModal(cell.artefactId);
   } else {
     cell.state = 'excavated';
-    console.log(`[Cloddio] Cell ${cellId} (row ${cell.row}, col ${cell.col}) — nothing found.`);
+    addNote('excavated', `· (${cell.row},${cell.col}) — nothing found`);
   }
 
   // Swap the single cell element in place
@@ -362,6 +364,7 @@ function handleDrop(droppedPeriodId, artefactId, slotEl) {
   const artefact = getArtefact(artefactId);
   if (!artefact) return;
 
+  const period  = getPeriod(artefact.periodId);
   const correct = artefact.periodId === droppedPeriodId;
 
   if (correct) {
@@ -370,16 +373,22 @@ function handleDrop(droppedPeriodId, artefactId, slotEl) {
     addCatalogueEntry(droppedPeriodId, artefactId);
     markTrayCardCatalogued(artefactId);
     flashSlot(slotEl, 'correct');
-    console.log(`[Cloddio] ✓ ${artefact.label} → ${droppedPeriodId} (+${artefact.points} pts)`);
+    addNote('correct', `✓ ${artefact.icon} ${artefact.label} → ${period?.label} (+${artefact.points} pts)`);
+    showToast(`✓ Correct — ${artefact.label} +${artefact.points} pts`, 'success');
+    updateHintButton();
+    checkCompletion();
   } else {
-    // Deduct 20% penalty, but only once per artefact
+    flashSlot(slotEl, 'wrong');
     if (!state.penalised.has(artefactId)) {
       const penalty = Math.round(artefact.points * 0.2);
       state.score   = Math.max(0, state.score - penalty);
       state.penalised.add(artefactId);
-      console.log(`[Cloddio] ✗ ${artefact.label} → wrong slot (-${penalty} pts)`);
+      addNote('wrong', `✗ ${artefact.icon} ${artefact.label} → wrong period (−${penalty} pts)`);
+      showToast(`✗ Wrong period — −${penalty} pts`, 'error');
+    } else {
+      addNote('wrong', `✗ ${artefact.icon} ${artefact.label} → wrong period again`);
+      showToast(`✗ Wrong period again`, 'error');
     }
-    flashSlot(slotEl, 'wrong');
   }
 
   updateScore();
@@ -431,6 +440,97 @@ function updateScore() {
   if (el) el.textContent = state.score;
 }
 
+// ─── Field notes log ──────────────────────────────────────────────────────────
+
+function addNote(type, text) {
+  const log = document.getElementById('field-notes-log');
+  if (!log) return;
+
+  const li = document.createElement('li');
+  li.className   = `note note--${type}`;
+  li.textContent = text;
+  log.appendChild(li);
+
+  // Auto-scroll to newest entry
+  log.scrollTop = log.scrollHeight;
+}
+
+// ─── Toast notifications ──────────────────────────────────────────────────────
+
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className   = `toast toast--${type}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+
+  // Double rAF ensures the element is in the DOM before transition starts
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    toast.classList.add('toast--visible');
+  }));
+
+  setTimeout(() => {
+    toast.classList.remove('toast--visible');
+    setTimeout(() => toast.remove(), 280);
+  }, 3000);
+}
+
+// ─── Completion ───────────────────────────────────────────────────────────────
+
+function checkCompletion() {
+  if (state.found === 0 || state.catalogued.size < state.found) return;
+
+  const perfectCount = state.found - state.penalised.size;
+  const bonus        = 50 + (Math.max(0, perfectCount) * 10);
+  state.score       += bonus;
+  updateScore();
+
+  const msg = `Trench complete! ${perfectCount}/${state.found} perfect · Bonus +${bonus} pts · Final score: ${state.score}`;
+  addNote('bonus', `★ ${msg}`);
+  showToast(`★ ${msg}`, 'ochre');
+  console.log(`[Cloddio] ${msg}`);
+}
+
+// ─── Hint ─────────────────────────────────────────────────────────────────────
+
+function requestHint() {
+  const uncatalogued = state.cells.filter(
+    c => c.state === 'found' && !state.catalogued.has(c.artefactId)
+  );
+
+  if (uncatalogued.length === 0) {
+    showToast('No uncatalogued finds remaining.', 'info');
+    return;
+  }
+
+  const cell     = uncatalogued[Math.floor(Math.random() * uncatalogued.length)];
+  const artefact = getArtefact(cell.artefactId);
+  const period   = getPeriod(artefact.periodId);
+  const text     = `${artefact.icon} ${artefact.label} belongs to the ${period.label} period`;
+
+  addNote('hint', `? ${text}`);
+  showToast(`Hint: ${text}`, 'hint');
+}
+
+// ─── New Trench ───────────────────────────────────────────────────────────────
+
+function newTrench() {
+  if (!confirm('Abandon this trench and start a new one?\nAll current progress will be lost.')) return;
+  initGame();
+}
+
+// ─── Hint button state ────────────────────────────────────────────────────────
+
+function updateHintButton() {
+  const btn = document.getElementById('btn-hint');
+  if (!btn) return;
+  btn.disabled = !state.cells.some(
+    c => c.state === 'found' && !state.catalogued.has(c.artefactId)
+  );
+}
+
 // ─── Progress bar ─────────────────────────────────────────────────────────────
 
 function updateProgress() {
@@ -462,6 +562,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') closeModal();
   });
+
+  // Tray action buttons
+  document.getElementById('btn-hint')?.addEventListener('click', requestHint);
+  document.getElementById('btn-new-trench')?.addEventListener('click', newTrench);
 
   initGame();
 });
