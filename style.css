@@ -485,6 +485,57 @@ button:disabled { cursor: default; }
   color: var(--clr-ochre);
 }
 
+/* --- Portrait lock overlay --- */
+.portrait-lock {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--clr-bg);
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--sp-6);
+}
+
+.portrait-lock__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.portrait-lock__icon {
+  font-size: 64px;
+  color: var(--clr-ochre);
+  animation: portrait-rotate 2s ease-in-out infinite;
+}
+
+.portrait-lock__heading {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  color: var(--clr-ochre);
+  font-weight: normal;
+}
+
+.portrait-lock__sub {
+  font-size: 13px;
+  color: var(--clr-text-dim);
+}
+
+@keyframes portrait-rotate {
+  0%, 100% { transform: rotate(0deg); }
+  40%       { transform: rotate(90deg); }
+  60%       { transform: rotate(90deg); }
+}
+
+/* Show on any narrow portrait viewport (covers all mobile/tablet) */
+@media (orientation: portrait) and (max-width: 1024px) {
+  .portrait-lock {
+    display: flex;
+  }
+}
+
 /* --- Scrollbar styling --- */
 ::-webkit-scrollbar {
   width: 6px;
