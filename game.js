@@ -20,25 +20,33 @@ const ROW_LAYER_CLASS = [
 // ─── Game state ───────────────────────────────────────────────────────────────
 
 const state = {
-  site:      null,  // SITES entry
-  cells:     [],    // array of cell objects (length === TOTAL_CELLS)
-  excavated: 0,     // cells clicked so far
-  found:     0,     // artefacts uncovered so far
+  site:       null,       // SITES entry
+  cells:      [],         // array of cell objects (length === TOTAL_CELLS)
+  excavated:  0,          // cells clicked so far
+  found:      0,          // artefacts uncovered so far
+  score:      0,          // running score
+  catalogued: new Set(),  // artefact IDs successfully catalogued
+  penalised:  new Set(),  // artefact IDs already penalised (penalty applied once)
 };
 
 // ─── Initialisation ───────────────────────────────────────────────────────────
 
 function initGame() {
-  state.site      = SITES[Math.floor(Math.random() * SITES.length)];
-  state.excavated = 0;
-  state.found     = 0;
-  state.cells     = buildCells(state.site);
+  state.site       = SITES[Math.floor(Math.random() * SITES.length)];
+  state.excavated  = 0;
+  state.found      = 0;
+  state.score      = 0;
+  state.catalogued = new Set();
+  state.penalised  = new Set();
+  state.cells      = buildCells(state.site);
 
   renderSiteMeta();
   renderStratigraphyLabels();
   renderGrid();
   renderTray();
+  renderCataloguePeriodSlots();
   updateProgress();
+  updateScore();
 
   console.log(`[Cloddio] Game started — "${state.site.label}" (${state.site.location})`);
   console.log(
@@ -278,6 +286,149 @@ function openModal(artefactId) {
 
 function closeModal() {
   document.getElementById('artefact-modal').classList.remove('is-open');
+}
+
+// ─── Catalogue period slots ───────────────────────────────────────────────────
+
+function renderCataloguePeriodSlots() {
+  const container = document.getElementById('period-slots');
+  if (!container) return;
+
+  container.innerHTML = '';
+
+  for (const period of PERIODS) {
+    container.appendChild(buildPeriodSlot(period));
+  }
+
+  const countEl = document.querySelector('.js-catalogue-count');
+  if (countEl) countEl.textContent = state.catalogued.size;
+}
+
+function buildPeriodSlot(period) {
+  const slot = document.createElement('div');
+  slot.className       = 'period-slot';
+  slot.dataset.periodId = period.id;
+
+  // Header row
+  const header = document.createElement('div');
+  header.className = 'period-slot__header';
+  header.innerHTML = `
+    <span class="period-slot__label" style="color:${period.colour}">${period.label}</span>
+    <span class="period-slot__date">${period.dateRange}</span>
+  `;
+
+  // Drop hint
+  const hint = document.createElement('p');
+  hint.className   = 'period-slot__drop-hint';
+  hint.textContent = 'Drag finds here';
+
+  // Entries list (hidden until first entry)
+  const entries = document.createElement('ul');
+  entries.className       = 'period-slot__entries';
+  entries.dataset.periodId = period.id;
+
+  slot.appendChild(header);
+  slot.appendChild(hint);
+  slot.appendChild(entries);
+
+  // Drag-over highlight
+  slot.addEventListener('dragover', e => {
+    e.preventDefault();
+    slot.classList.add('drag-over');
+  });
+
+  slot.addEventListener('dragleave', e => {
+    if (!slot.contains(e.relatedTarget)) {
+      slot.classList.remove('drag-over');
+    }
+  });
+
+  slot.addEventListener('drop', e => {
+    e.preventDefault();
+    slot.classList.remove('drag-over');
+    const artefactId = e.dataTransfer.getData('text/plain');
+    if (artefactId) handleDrop(period.id, artefactId, slot);
+  });
+
+  return slot;
+}
+
+// ─── Drop handling ────────────────────────────────────────────────────────────
+
+function handleDrop(droppedPeriodId, artefactId, slotEl) {
+  // Ignore already-catalogued artefacts
+  if (state.catalogued.has(artefactId)) return;
+
+  const artefact = getArtefact(artefactId);
+  if (!artefact) return;
+
+  const correct = artefact.periodId === droppedPeriodId;
+
+  if (correct) {
+    state.score += artefact.points;
+    state.catalogued.add(artefactId);
+    addCatalogueEntry(droppedPeriodId, artefactId);
+    markTrayCardCatalogued(artefactId);
+    flashSlot(slotEl, 'correct');
+    console.log(`[Cloddio] ✓ ${artefact.label} → ${droppedPeriodId} (+${artefact.points} pts)`);
+  } else {
+    // Deduct 20% penalty, but only once per artefact
+    if (!state.penalised.has(artefactId)) {
+      const penalty = Math.round(artefact.points * 0.2);
+      state.score   = Math.max(0, state.score - penalty);
+      state.penalised.add(artefactId);
+      console.log(`[Cloddio] ✗ ${artefact.label} → wrong slot (-${penalty} pts)`);
+    }
+    flashSlot(slotEl, 'wrong');
+  }
+
+  updateScore();
+}
+
+function flashSlot(slotEl, type) {
+  slotEl.classList.remove('flash-correct', 'flash-wrong');
+  // Force reflow so re-triggering the same animation works
+  void slotEl.offsetWidth;
+  slotEl.classList.add(`flash-${type}`);
+  setTimeout(() => slotEl.classList.remove(`flash-${type}`), 700);
+}
+
+function addCatalogueEntry(periodId, artefactId) {
+  const artefact = getArtefact(artefactId);
+
+  // Remove drop hint once the first entry lands
+  const slot    = document.querySelector(`.period-slot[data-period-id="${periodId}"]`);
+  const hint    = slot?.querySelector('.period-slot__drop-hint');
+  if (hint) hint.hidden = true;
+
+  const entries = document.querySelector(`.period-slot__entries[data-period-id="${periodId}"]`);
+  if (!entries) return;
+
+  const li = document.createElement('li');
+  li.className = 'period-slot__entry';
+  li.innerHTML = `
+    <span class="period-slot__entry-name">${artefact.icon} ${artefact.label}</span>
+    <span class="chip chip--rare">✓ correct</span>
+  `;
+  entries.appendChild(li);
+
+  // Update catalogue entry count
+  const countEl = document.querySelector('.js-catalogue-count');
+  if (countEl) countEl.textContent = state.catalogued.size;
+}
+
+function markTrayCardCatalogued(artefactId) {
+  const card = document.querySelector(`.tray-slot--filled[data-artefact-id="${artefactId}"]`);
+  if (!card) return;
+  card.classList.add('tray-slot--catalogued');
+  card.draggable = false;
+}
+
+// ─── Score ────────────────────────────────────────────────────────────────────
+
+function updateScore() {
+  const el = document.querySelector('.js-score');
+  if (el) el.textContent = state.score;
 }
 
 // ─── Progress bar ─────────────────────────────────────────────────────────────

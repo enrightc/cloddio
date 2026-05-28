@@ -14,6 +14,10 @@
       <span class="season-label">Season 1 · Trench A</span>
       <span class="day-label">Day 1</span>
     </div>
+    <div class="header-score">
+      <span class="score-label">Score</span>
+      <strong class="js-score">0</strong>
+    </div>
   </header>
 
   <main class="game-layout">
@@ -72,48 +76,10 @@
     <aside class="panel panel--catalogue" aria-label="Field Catalogue">
       <div class="panel-header">
         <h2 class="panel-title">Field Catalogue</h2>
-        <span class="panel-subtitle">3 entries</span>
+        <span class="panel-subtitle"><span class="js-catalogue-count">0</span> entries</span>
       </div>
-
-      <div class="catalogue-filter">
-        <button class="filter-btn filter-btn--active">All</button>
-        <button class="filter-btn">Finds</button>
-        <button class="filter-btn">Features</button>
-        <button class="filter-btn">Contexts</button>
-      </div>
-
-      <ul class="catalogue-list">
-        <li class="catalogue-entry catalogue-entry--find">
-          <div class="entry-header">
-            <span class="entry-id">F-001</span>
-            <span class="entry-type entry-type--find">Find</span>
-          </div>
-          <div class="entry-name">Bronze Brooch</div>
-          <div class="entry-detail">Context 001 · Romano-British · Complete</div>
-          <div class="entry-note">Penannular type. Pin missing. Green patina on reverse.</div>
-        </li>
-        <li class="catalogue-entry catalogue-entry--find">
-          <div class="entry-header">
-            <span class="entry-id">F-002</span>
-            <span class="entry-type entry-type--find">Find</span>
-          </div>
-          <div class="entry-name">Pottery Sherd ×4</div>
-          <div class="entry-detail">Context 002 · Iron Age? · Fragmented</div>
-          <div class="entry-note">Hand-thrown, grass-tempered. No decoration visible.</div>
-        </li>
-        <li class="catalogue-entry catalogue-entry--feature">
-          <div class="entry-header">
-            <span class="entry-id">X-001</span>
-            <span class="entry-type entry-type--feature">Feature</span>
-          </div>
-          <div class="entry-name">Post Hole (possible)</div>
-          <div class="entry-detail">Context 003 · Undated · Circular cut ~0.3 m</div>
-          <div class="entry-note">Dark fill distinct from surrounding matrix. Requires full excavation.</div>
-        </li>
-      </ul>
-
+      <div class="period-slots" id="period-slots"><!-- populated by game.js --></div>
       <div class="catalogue-footer">
-        <button class="btn btn--primary" disabled>New Entry</button>
         <button class="btn btn--ghost" disabled>Export Report</button>
       </div>
     </aside>
