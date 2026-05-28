@@ -1,0 +1,498 @@
+/* ============================================================
+   CLODDIO — Base styles, layout, colour scheme
+   Stage 1: structure only, no interactive component styles
+   ============================================================ */
+
+/* --- Custom properties --- */
+:root {
+  /* Palette */
+  --clr-bg:           #1b1f2b;
+  --clr-surface:      #242837;
+  --clr-surface-alt:  #2c3044;
+  --clr-border:       #353a50;
+  --clr-border-light: #464d6a;
+
+  --clr-ochre:        #c89a3c;
+  --clr-ochre-dim:    #9a7530;
+  --clr-ochre-muted:  #4a3c1a;
+
+  --clr-text:         #ddd5c2;
+  --clr-text-dim:     #8a8470;
+  --clr-text-faint:   #545060;
+
+  --clr-accent-find:    #6a9e72;
+  --clr-accent-feature: #7a7ec8;
+  --clr-accent-danger:  #b05c5c;
+
+  /* Stratigraphy layer colours */
+  --clr-layer-topsoil:   #4a3c28;
+  --clr-layer-medieval:  #3d3220;
+  --clr-layer-iron-age:  #362c1c;
+  --clr-layer-natural:   #2e2614;
+
+  /* Typography */
+  --font-serif: Georgia, 'Times New Roman', serif;
+  --font-mono:  'Courier New', Courier, monospace;
+  --font-sans:  system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Spacing scale */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+
+  /* Layout */
+  --header-h:     52px;
+  --tray-w:       220px;
+  --catalogue-w:  280px;
+  --panel-radius: 6px;
+}
+
+/* --- Reset / base --- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background-color: var(--clr-bg);
+  color: var(--clr-text);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+}
+
+ul { list-style: none; }
+button { cursor: pointer; font: inherit; }
+button:disabled { cursor: default; }
+
+/* --- Site header --- */
+.site-header {
+  height: var(--header-h);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--sp-6);
+  background: var(--clr-surface);
+  border-bottom: 1px solid var(--clr-border);
+  gap: var(--sp-4);
+}
+
+.site-title {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: normal;
+  letter-spacing: 0.06em;
+  color: var(--clr-ochre);
+}
+
+.header-meta {
+  display: flex;
+  gap: var(--sp-4);
+  font-size: 12px;
+  color: var(--clr-text-dim);
+}
+
+.season-label {
+  font-family: var(--font-mono);
+}
+
+.day-label {
+  font-family: var(--font-mono);
+  color: var(--clr-ochre-dim);
+}
+
+/* --- Three-panel game layout --- */
+.game-layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: var(--tray-w) 1fr var(--catalogue-w);
+  grid-template-rows: 1fr;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* --- Shared panel shell --- */
+.panel {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--panel-radius);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.panel-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--clr-border);
+  background: var(--clr-surface-alt);
+}
+
+.panel-title {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  font-weight: normal;
+  letter-spacing: 0.05em;
+  color: var(--clr-ochre);
+  text-transform: uppercase;
+}
+
+.panel-subtitle {
+  font-size: 11px;
+  color: var(--clr-text-faint);
+  font-family: var(--font-mono);
+}
+
+/* --- Artefact Tray (left panel) --- */
+.panel--tray {
+  grid-column: 1;
+}
+
+.tray-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(4, 1fr);
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.tray-slot {
+  background: var(--clr-bg);
+  border: 1px dashed var(--clr-border);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-1);
+  padding: var(--sp-2);
+  min-height: 72px;
+  text-align: center;
+  transition: border-color 0.15s;
+}
+
+.tray-slot--filled {
+  border-style: solid;
+  border-color: var(--clr-border-light);
+  background: var(--clr-surface-alt);
+}
+
+.tray-slot__icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.tray-slot__label {
+  font-size: 10px;
+  color: var(--clr-text);
+  line-height: 1.2;
+}
+
+.tray-slot__period {
+  font-size: 9px;
+  color: var(--clr-text-faint);
+  font-family: var(--font-mono);
+}
+
+.tray-actions {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  border-top: 1px solid var(--clr-border);
+}
+
+/* --- Dig Site (centre panel) --- */
+.panel--site {
+  grid-column: 2;
+}
+
+.site-controls {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+.dig-viewport {
+  flex: 1;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  padding: var(--sp-3) var(--sp-3) var(--sp-3) 72px;
+  min-height: 0;
+}
+
+.stratigraphy-labels {
+  position: absolute;
+  left: var(--sp-3);
+  top: var(--sp-3);
+  bottom: 28px;
+  width: 60px;
+  display: flex;
+  flex-direction: column;
+}
+
+.layer-label {
+  position: absolute;
+  font-size: 9px;
+  font-family: var(--font-mono);
+  color: var(--clr-text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.dig-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 2px;
+  min-height: 0;
+}
+
+/* Stratigraphy layer colours */
+.cell {
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: default;
+}
+
+.cell--topsoil   { background: var(--clr-layer-topsoil); }
+.cell--medieval  { background: var(--clr-layer-medieval); }
+.cell--iron-age  { background: var(--clr-layer-iron-age); }
+.cell--natural   { background: var(--clr-layer-natural); }
+
+.cell--dug {
+  opacity: 0.4;
+  background: var(--clr-bg);
+  border: 1px dashed var(--clr-border);
+}
+
+.cell--artefact {
+  outline: 1px solid var(--clr-ochre-dim);
+  cursor: pointer;
+}
+
+.cell--feature {
+  outline: 2px solid var(--clr-accent-feature);
+  cursor: pointer;
+}
+
+.depth-scale {
+  position: absolute;
+  bottom: var(--sp-3);
+  left: 72px;
+  right: var(--sp-3);
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  font-family: var(--font-mono);
+  color: var(--clr-text-faint);
+}
+
+.site-status {
+  flex-shrink: 0;
+  display: flex;
+  gap: var(--sp-5);
+  padding: var(--sp-2) var(--sp-4);
+  border-top: 1px solid var(--clr-border);
+  background: var(--clr-surface-alt);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--clr-text-dim);
+}
+
+.status-item strong {
+  color: var(--clr-text);
+}
+
+/* --- Field Catalogue (right panel) --- */
+.panel--catalogue {
+  grid-column: 3;
+}
+
+.catalogue-filter {
+  flex-shrink: 0;
+  display: flex;
+  gap: var(--sp-1);
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--clr-border);
+}
+
+.filter-btn {
+  padding: var(--sp-1) var(--sp-2);
+  border: 1px solid var(--clr-border);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--clr-text-dim);
+  font-size: 11px;
+}
+
+.filter-btn--active {
+  background: var(--clr-ochre-muted);
+  border-color: var(--clr-ochre-dim);
+  color: var(--clr-ochre);
+}
+
+.catalogue-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-height: 0;
+}
+
+.catalogue-entry {
+  padding: var(--sp-3);
+  background: var(--clr-surface-alt);
+  border: 1px solid var(--clr-border);
+  border-radius: 4px;
+  border-left-width: 3px;
+}
+
+.catalogue-entry--find    { border-left-color: var(--clr-accent-find); }
+.catalogue-entry--feature { border-left-color: var(--clr-accent-feature); }
+.catalogue-entry--context { border-left-color: var(--clr-ochre-dim); }
+
+.entry-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sp-1);
+}
+
+.entry-id {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--clr-text-faint);
+}
+
+.entry-type {
+  font-size: 9px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 1px 5px;
+  border-radius: 2px;
+}
+
+.entry-type--find    { background: #1e3b22; color: var(--clr-accent-find); }
+.entry-type--feature { background: #1e1e3b; color: var(--clr-accent-feature); }
+
+.entry-name {
+  font-size: 13px;
+  color: var(--clr-text);
+  margin-bottom: var(--sp-1);
+}
+
+.entry-detail {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--clr-text-faint);
+  margin-bottom: var(--sp-1);
+}
+
+.entry-note {
+  font-size: 11px;
+  color: var(--clr-text-dim);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.catalogue-footer {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  border-top: 1px solid var(--clr-border);
+}
+
+/* --- Shared button styles --- */
+.btn {
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: 4px;
+  font-size: 12px;
+  border: 1px solid transparent;
+  text-align: center;
+}
+
+.btn--primary {
+  background: var(--clr-ochre-muted);
+  border-color: var(--clr-ochre-dim);
+  color: var(--clr-ochre);
+}
+
+.btn--primary:disabled {
+  opacity: 0.4;
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: var(--clr-border);
+  color: var(--clr-text-dim);
+}
+
+.btn--ghost:disabled {
+  opacity: 0.35;
+}
+
+.btn--tool {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--clr-bg);
+  border: 1px solid var(--clr-border);
+  border-radius: 4px;
+  font-size: 14px;
+  color: var(--clr-text-dim);
+}
+
+.btn--tool.btn--active {
+  background: var(--clr-ochre-muted);
+  border-color: var(--clr-ochre-dim);
+  color: var(--clr-ochre);
+}
+
+/* --- Scrollbar styling --- */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--clr-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--clr-border-light);
+  border-radius: 3px;
+}

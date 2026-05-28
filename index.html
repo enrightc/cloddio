@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloddio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <h1 class="site-title">Cloddio</h1>
+    <div class="header-meta">
+      <span class="season-label">Season 1 · Trench A</span>
+      <span class="day-label">Day 1</span>
+    </div>
+  </header>
+
+  <main class="game-layout">
+
+    <!-- Left panel: Artefact Tray -->
+    <aside class="panel panel--tray" aria-label="Artefact Tray">
+      <div class="panel-header">
+        <h2 class="panel-title">Artefact Tray</h2>
+        <span class="panel-subtitle">0 / 8 slots</span>
+      </div>
+      <div class="tray-grid">
+        <div class="tray-slot tray-slot--filled">
+          <div class="tray-slot__icon">&#x1F9B4;</div>
+          <div class="tray-slot__label">Bone Fragment</div>
+          <div class="tray-slot__period">Unknown</div>
+        </div>
+        <div class="tray-slot tray-slot--filled">
+          <div class="tray-slot__icon">&#x1FAD9;</div>
+          <div class="tray-slot__label">Pottery Sherd</div>
+          <div class="tray-slot__period">Iron Age?</div>
+        </div>
+        <div class="tray-slot tray-slot--filled">
+          <div class="tray-slot__icon">&#x1F48D;</div>
+          <div class="tray-slot__label">Bronze Brooch</div>
+          <div class="tray-slot__period">Romano-British</div>
+        </div>
+        <div class="tray-slot"></div>
+        <div class="tray-slot"></div>
+        <div class="tray-slot"></div>
+        <div class="tray-slot"></div>
+        <div class="tray-slot"></div>
+      </div>
+      <div class="tray-actions">
+        <button class="btn btn--ghost" disabled>Log to Catalogue</button>
+        <button class="btn btn--ghost" disabled>Discard</button>
+      </div>
+    </aside>
+
+    <!-- Centre panel: Dig Site -->
+    <section class="panel panel--site" aria-label="Dig Site">
+      <div class="panel-header">
+        <h2 class="panel-title">Dig Site</h2>
+        <div class="site-controls">
+          <button class="btn btn--tool btn--active" title="Trowel">&#x1FA9B;</button>
+          <button class="btn btn--tool" title="Brush">&#x1F58C;&#xFE0F;</button>
+          <button class="btn btn--tool" title="Sieve">&#x2B1C;</button>
+        </div>
+      </div>
+
+      <div class="dig-viewport">
+        <div class="stratigraphy-labels">
+          <span class="layer-label" style="top: 8%;">Topsoil</span>
+          <span class="layer-label" style="top: 30%;">Medieval</span>
+          <span class="layer-label" style="top: 55%;">Iron Age</span>
+          <span class="layer-label" style="top: 78%;">Natural</span>
+        </div>
+
+        <div class="dig-grid">
+          <!-- Row 0 — topsoil -->
+          <div class="cell cell--topsoil"></div>
+          <div class="cell cell--topsoil"></div>
+          <div class="cell cell--topsoil"></div>
+          <div class="cell cell--topsoil"></div>
+          <div class="cell cell--topsoil"></div>
+          <div class="cell cell--topsoil"></div>
+          <!-- Row 1 -->
+          <div class="cell cell--medieval cell--dug"></div>
+          <div class="cell cell--medieval cell--dug"></div>
+          <div class="cell cell--medieval"></div>
+          <div class="cell cell--medieval"></div>
+          <div class="cell cell--medieval"></div>
+          <div class="cell cell--medieval"></div>
+          <!-- Row 2 -->
+          <div class="cell cell--iron-age"></div>
+          <div class="cell cell--iron-age cell--artefact" title="Pottery sherd visible">&#x1FAD9;</div>
+          <div class="cell cell--iron-age"></div>
+          <div class="cell cell--iron-age"></div>
+          <div class="cell cell--iron-age"></div>
+          <div class="cell cell--iron-age"></div>
+          <!-- Row 3 -->
+          <div class="cell cell--iron-age"></div>
+          <div class="cell cell--iron-age"></div>
+          <div class="cell cell--iron-age"></div>
+          <div class="cell cell--iron-age cell--feature" title="Post hole?"></div>
+          <div class="cell cell--iron-age"></div>
+          <div class="cell cell--iron-age"></div>
+          <!-- Row 4 — natural -->
+          <div class="cell cell--natural"></div>
+          <div class="cell cell--natural"></div>
+          <div class="cell cell--natural"></div>
+          <div class="cell cell--natural"></div>
+          <div class="cell cell--natural"></div>
+          <div class="cell cell--natural"></div>
+        </div>
+
+        <div class="depth-scale">
+          <span>0 cm</span>
+          <span>20</span>
+          <span>40</span>
+          <span>60</span>
+          <span>80</span>
+        </div>
+      </div>
+
+      <div class="site-status">
+        <span class="status-item">Depth: <strong>22 cm</strong></span>
+        <span class="status-item">Context: <strong>002</strong></span>
+        <span class="status-item">Soil: <strong>Dark brown silty clay</strong></span>
+      </div>
+    </section>
+
+    <!-- Right panel: Field Catalogue -->
+    <aside class="panel panel--catalogue" aria-label="Field Catalogue">
+      <div class="panel-header">
+        <h2 class="panel-title">Field Catalogue</h2>
+        <span class="panel-subtitle">3 entries</span>
+      </div>
+
+      <div class="catalogue-filter">
+        <button class="filter-btn filter-btn--active">All</button>
+        <button class="filter-btn">Finds</button>
+        <button class="filter-btn">Features</button>
+        <button class="filter-btn">Contexts</button>
+      </div>
+
+      <ul class="catalogue-list">
+        <li class="catalogue-entry catalogue-entry--find">
+          <div class="entry-header">
+            <span class="entry-id">F-001</span>
+            <span class="entry-type entry-type--find">Find</span>
+          </div>
+          <div class="entry-name">Bronze Brooch</div>
+          <div class="entry-detail">Context 001 · Romano-British · Complete</div>
+          <div class="entry-note">Penannular type. Pin missing. Green patina on reverse.</div>
+        </li>
+        <li class="catalogue-entry catalogue-entry--find">
+          <div class="entry-header">
+            <span class="entry-id">F-002</span>
+            <span class="entry-type entry-type--find">Find</span>
+          </div>
+          <div class="entry-name">Pottery Sherd ×4</div>
+          <div class="entry-detail">Context 002 · Iron Age? · Fragmented</div>
+          <div class="entry-note">Hand-thrown, grass-tempered. No decoration visible.</div>
+        </li>
+        <li class="catalogue-entry catalogue-entry--feature">
+          <div class="entry-header">
+            <span class="entry-id">X-001</span>
+            <span class="entry-type entry-type--feature">Feature</span>
+          </div>
+          <div class="entry-name">Post Hole (possible)</div>
+          <div class="entry-detail">Context 003 · Undated · Circular cut ~0.3 m</div>
+          <div class="entry-note">Dark fill distinct from surrounding matrix. Requires full excavation.</div>
+        </li>
+      </ul>
+
+      <div class="catalogue-footer">
+        <button class="btn btn--primary" disabled>New Entry</button>
+        <button class="btn btn--ghost" disabled>Export Report</button>
+      </div>
+    </aside>
+
+  </main>
+
+  <script src="data.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
