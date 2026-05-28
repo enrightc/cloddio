@@ -5,6 +5,7 @@
 const COLS        = 5;
 const ROWS        = 4;
 const TOTAL_CELLS = COLS * ROWS; // 20
+const TRAY_SIZE   = 8;
 const MIN_FINDS   = 4;
 const MAX_FINDS   = 7;
 
@@ -36,6 +37,7 @@ function initGame() {
   renderSiteMeta();
   renderStratigraphyLabels();
   renderGrid();
+  renderTray();
   updateProgress();
 
   console.log(`[Cloddio] Game started — "${state.site.label}" (${state.site.location})`);
@@ -75,7 +77,7 @@ function buildCells(site) {
   }));
 }
 
-// ─── Rendering ────────────────────────────────────────────────────────────────
+// ─── Grid rendering ───────────────────────────────────────────────────────────
 
 function renderSiteMeta() {
   const { site } = state;
@@ -95,11 +97,9 @@ function renderStratigraphyLabels() {
 
   const { site } = state;
 
-  // Build ROWS labels: Topsoil, site period(s), Natural — clamped to ROWS
   const periodLabels = site.periods.map(id => getPeriod(id)?.label ?? id);
   const raw = ['Topsoil', ...periodLabels, 'Natural'];
 
-  // Fit to exactly ROWS entries by collapsing extras into the middle
   const labels = raw.length <= ROWS
     ? [...raw, ...Array(ROWS - raw.length).fill('')]
     : [raw[0], ...raw.slice(1, ROWS - 1), raw[raw.length - 1]];
@@ -145,9 +145,63 @@ function buildCellEl(cell) {
     const artefact = getArtefact(cell.artefactId);
     el.textContent = artefact?.icon ?? '?';
     el.title       = artefact?.label ?? '';
+    el.addEventListener('click', () => openModal(cell.artefactId));
   }
 
   return el;
+}
+
+// ─── Tray rendering ───────────────────────────────────────────────────────────
+
+function renderTray() {
+  const grid = document.querySelector('.tray-grid');
+  if (!grid) return;
+
+  const found = state.cells.filter(c => c.state === 'found');
+
+  grid.innerHTML = '';
+
+  found.forEach(c => grid.appendChild(buildTrayCard(c.artefactId)));
+
+  // Empty placeholder slots
+  for (let i = found.length; i < TRAY_SIZE; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'tray-slot';
+    grid.appendChild(slot);
+  }
+
+  const countEl = document.querySelector('.js-tray-count');
+  if (countEl) countEl.textContent = found.length;
+}
+
+function buildTrayCard(artefactId) {
+  const artefact = getArtefact(artefactId);
+  const period   = getPeriod(artefact.periodId);
+
+  const card = document.createElement('div');
+  card.className          = 'tray-slot tray-slot--filled';
+  card.draggable          = true;
+  card.dataset.artefactId = artefactId;
+  card.setAttribute('role', 'button');
+  card.setAttribute('tabindex', '0');
+  card.title = `${artefact.label} — click to view`;
+
+  card.innerHTML = `
+    <div class="tray-slot__icon">${artefact.icon}</div>
+    <div class="tray-slot__label">${artefact.label}</div>
+    <div class="tray-slot__period">${period?.label ?? ''}</div>
+  `;
+
+  card.addEventListener('click', () => openModal(artefactId));
+  card.addEventListener('keydown', e => { if (e.key === 'Enter') openModal(artefactId); });
+
+  card.addEventListener('dragstart', e => {
+    e.dataTransfer.setData('text/plain', artefactId);
+    card.classList.add('is-dragging');
+  });
+  card.addEventListener('dragend', () => card.classList.remove('is-dragging'));
+
+  return card;
 }
 
 // ─── Interaction ──────────────────────────────────────────────────────────────
@@ -166,6 +220,8 @@ function handleCellClick(cellId) {
       `[Cloddio] Find! ${artefact.label} · ${artefact.rarity} · ` +
       `${artefact.points} pts · ${getPeriod(artefact.periodId)?.label}`
     );
+    renderTray();
+    openModal(cell.artefactId);
   } else {
     cell.state = 'excavated';
     console.log(`[Cloddio] Cell ${cellId} (row ${cell.row}, col ${cell.col}) — nothing found.`);
@@ -179,14 +235,59 @@ function handleCellClick(cellId) {
   updateProgress();
 }
 
+// ─── Modal ────────────────────────────────────────────────────────────────────
+
+function openModal(artefactId) {
+  const artefact = getArtefact(artefactId);
+  const period   = getPeriod(artefact.periodId);
+
+  const eraEl   = document.querySelector('.js-modal-era');
+  const iconEl  = document.querySelector('.js-modal-icon');
+  const nameEl  = document.querySelector('.js-modal-name');
+  const descEl  = document.querySelector('.js-modal-desc');
+  const chipsEl = document.querySelector('.js-modal-chips');
+  const consEl  = document.querySelector('.js-modal-conservation');
+
+  if (eraEl) {
+    eraEl.textContent        = period?.label ?? '';
+    eraEl.style.color        = period?.colour ?? 'var(--clr-ochre)';
+    eraEl.style.borderColor  = period?.colour ?? 'var(--clr-ochre)';
+    eraEl.style.background   = (period?.colour ?? '#888') + '28';
+  }
+
+  if (iconEl) iconEl.textContent = artefact.icon;
+  if (nameEl) nameEl.textContent = artefact.label;
+  if (descEl) descEl.textContent = artefact.description;
+
+  if (chipsEl) {
+    chipsEl.innerHTML = `
+      <span class="chip chip--${artefact.rarity}">${artefact.rarity}</span>
+      <span class="chip chip--points">${artefact.points} pts</span>
+    `;
+  }
+
+  if (consEl) {
+    consEl.textContent = artefact.conservationNote
+      ? `Conservation note: ${artefact.conservationNote}`
+      : '';
+    consEl.hidden = !artefact.conservationNote;
+  }
+
+  document.getElementById('artefact-modal').classList.add('is-open');
+}
+
+function closeModal() {
+  document.getElementById('artefact-modal').classList.remove('is-open');
+}
+
 // ─── Progress bar ─────────────────────────────────────────────────────────────
 
 function updateProgress() {
   const pct = (state.excavated / TOTAL_CELLS) * 100;
 
-  const fill      = document.querySelector('.progress-fill');
-  const label     = document.querySelector('.progress-label');
-  const findsEl   = document.querySelector('.js-finds-count');
+  const fill    = document.querySelector('.progress-fill');
+  const label   = document.querySelector('.progress-label');
+  const findsEl = document.querySelector('.js-finds-count');
 
   if (fill)    fill.style.width    = `${pct}%`;
   if (label)   label.textContent   = `${state.excavated} / ${TOTAL_CELLS} cells`;
@@ -195,4 +296,21 @@ function updateProgress() {
 
 // ─── Boot ─────────────────────────────────────────────────────────────────────
 
-document.addEventListener('DOMContentLoaded', initGame);
+document.addEventListener('DOMContentLoaded', () => {
+  // Modal close — button
+  document.querySelector('.modal-close')
+    ?.addEventListener('click', closeModal);
+
+  // Modal close — overlay backdrop click
+  document.getElementById('artefact-modal')
+    ?.addEventListener('click', e => {
+      if (e.target.id === 'artefact-modal') closeModal();
+    });
+
+  // Modal close — Escape key
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  initGame();
+});

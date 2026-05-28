@@ -526,6 +526,145 @@ button:disabled { cursor: default; }
   color: var(--clr-ochre);
 }
 
+/* --- Tray card draggable states --- */
+.tray-slot--filled {
+  cursor: grab;
+}
+.tray-slot--filled:hover {
+  border-color: var(--clr-ochre-dim);
+}
+.tray-slot--filled.is-dragging {
+  opacity: 0.4;
+  cursor: grabbing;
+}
+
+/* --- Artefact detail modal --- */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(0, 0, 0, 0.72);
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-6);
+}
+
+.modal-overlay.is-open {
+  display: flex;
+}
+
+.modal-card {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border-light);
+  border-radius: 8px;
+  padding: var(--sp-6);
+  width: min(440px, 100%);
+  position: relative;
+  max-height: 88vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  animation: modal-in 0.18s ease;
+}
+
+@keyframes modal-in {
+  from { transform: scale(0.94); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+.modal-close {
+  position: absolute;
+  top: var(--sp-3);
+  right: var(--sp-3);
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  background: transparent;
+  border: 1px solid var(--clr-border);
+  color: var(--clr-text-dim);
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.modal-close:hover {
+  background: var(--clr-surface-alt);
+  border-color: var(--clr-border-light);
+  color: var(--clr-text);
+}
+
+.modal-era {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 3px 10px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  border: 1px solid currentColor;
+}
+
+.modal-icon {
+  font-size: 52px;
+  line-height: 1;
+  text-align: center;
+}
+
+.modal-name {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: normal;
+  color: var(--clr-text);
+  text-align: center;
+  margin-top: calc(var(--sp-2) * -1);
+}
+
+.modal-desc {
+  font-size: 13px;
+  color: var(--clr-text-dim);
+  line-height: 1.65;
+}
+
+.modal-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.chip {
+  padding: 3px 10px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid transparent;
+}
+
+.chip--common      { background: #222222; color: #777;                  border-color: #333; }
+.chip--uncommon    { background: #192435; color: #6a9ec8;               border-color: #263848; }
+.chip--rare        { background: #1e3224; color: var(--clr-accent-find); border-color: #2a4830; }
+.chip--exceptional { background: var(--clr-ochre-muted); color: var(--clr-ochre); border-color: var(--clr-ochre-dim); }
+.chip--points      { background: #25241a; color: #b8b860;               border-color: #3a3a22; }
+
+.modal-conservation {
+  font-size: 11px;
+  color: var(--clr-text-dim);
+  font-family: var(--font-mono);
+  padding: var(--sp-3);
+  background: var(--clr-bg);
+  border: 1px solid var(--clr-border);
+  border-left: 3px solid var(--clr-ochre-dim);
+  border-radius: 4px;
+  line-height: 1.55;
+}
+
 /* --- Portrait lock overlay --- */
 .portrait-lock {
   display: none;

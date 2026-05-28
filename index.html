@@ -22,30 +22,9 @@
     <aside class="panel panel--tray" aria-label="Artefact Tray">
       <div class="panel-header">
         <h2 class="panel-title">Artefact Tray</h2>
-        <span class="panel-subtitle">0 / 8 slots</span>
+        <span class="panel-subtitle"><span class="js-tray-count">0</span> / 8 slots</span>
       </div>
-      <div class="tray-grid">
-        <div class="tray-slot tray-slot--filled">
-          <div class="tray-slot__icon">&#x1F9B4;</div>
-          <div class="tray-slot__label">Bone Fragment</div>
-          <div class="tray-slot__period">Unknown</div>
-        </div>
-        <div class="tray-slot tray-slot--filled">
-          <div class="tray-slot__icon">&#x1FAD9;</div>
-          <div class="tray-slot__label">Pottery Sherd</div>
-          <div class="tray-slot__period">Iron Age?</div>
-        </div>
-        <div class="tray-slot tray-slot--filled">
-          <div class="tray-slot__icon">&#x1F48D;</div>
-          <div class="tray-slot__label">Bronze Brooch</div>
-          <div class="tray-slot__period">Romano-British</div>
-        </div>
-        <div class="tray-slot"></div>
-        <div class="tray-slot"></div>
-        <div class="tray-slot"></div>
-        <div class="tray-slot"></div>
-        <div class="tray-slot"></div>
-      </div>
+      <div class="tray-grid"><!-- populated by game.js --></div>
       <div class="tray-actions">
         <button class="btn btn--ghost" disabled>Log to Catalogue</button>
         <button class="btn btn--ghost" disabled>Discard</button>
@@ -140,6 +119,19 @@
     </aside>
 
   </main>
+
+  <!-- Artefact detail modal -->
+  <div class="modal-overlay" id="artefact-modal">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-artefact-name">
+      <button class="modal-close" aria-label="Close">&times;</button>
+      <span class="modal-era js-modal-era"></span>
+      <div class="modal-icon js-modal-icon"></div>
+      <h2 class="modal-name js-modal-name" id="modal-artefact-name"></h2>
+      <p class="modal-desc js-modal-desc"></p>
+      <div class="modal-chips js-modal-chips"></div>
+      <p class="modal-conservation js-modal-conservation"></p>
+    </div>
+  </div>
 
   <!-- Portrait lock overlay — visible only on touch devices in portrait mode -->
   <div class="portrait-lock" aria-hidden="true">
