@@ -267,8 +267,8 @@ button:disabled { cursor: default; }
 .dig-grid {
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(5, 1fr);
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(4, 1fr);
   gap: 2px;
   min-height: 0;
 }
@@ -281,6 +281,7 @@ button:disabled { cursor: default; }
   justify-content: center;
   font-size: 18px;
   cursor: default;
+  transition: filter 0.1s;
 }
 
 .cell--topsoil   { background: var(--clr-layer-topsoil); }
@@ -288,20 +289,27 @@ button:disabled { cursor: default; }
 .cell--iron-age  { background: var(--clr-layer-iron-age); }
 .cell--natural   { background: var(--clr-layer-natural); }
 
+/* Unexcavated — clickable */
+.cell[data-excavatable] {
+  cursor: pointer;
+}
+.cell[data-excavatable]:hover {
+  filter: brightness(1.4);
+}
+
+/* Excavated empty */
 .cell--dug {
-  opacity: 0.4;
   background: var(--clr-bg);
   border: 1px dashed var(--clr-border);
+  opacity: 0.5;
 }
 
-.cell--artefact {
-  outline: 1px solid var(--clr-ochre-dim);
-  cursor: pointer;
-}
-
-.cell--feature {
-  outline: 2px solid var(--clr-accent-feature);
-  cursor: pointer;
+/* Excavated with find */
+.cell--find {
+  outline: 2px solid var(--clr-ochre-dim);
+  background: var(--clr-ochre-muted);
+  cursor: default;
+  font-size: 20px;
 }
 
 .depth-scale {
@@ -314,6 +322,39 @@ button:disabled { cursor: default; }
   font-size: 9px;
   font-family: var(--font-mono);
   color: var(--clr-text-faint);
+}
+
+/* --- Excavation progress bar --- */
+.excavation-progress {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-4);
+  border-top: 1px solid var(--clr-border);
+}
+
+.progress-track {
+  flex: 1;
+  height: 5px;
+  background: var(--clr-bg);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--clr-ochre-dim);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--clr-text-faint);
+  white-space: nowrap;
 }
 
 .site-status {

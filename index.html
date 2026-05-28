@@ -64,51 +64,8 @@
       </div>
 
       <div class="dig-viewport">
-        <div class="stratigraphy-labels">
-          <span class="layer-label" style="top: 8%;">Topsoil</span>
-          <span class="layer-label" style="top: 30%;">Medieval</span>
-          <span class="layer-label" style="top: 55%;">Iron Age</span>
-          <span class="layer-label" style="top: 78%;">Natural</span>
-        </div>
-
-        <div class="dig-grid">
-          <!-- Row 0 — topsoil -->
-          <div class="cell cell--topsoil"></div>
-          <div class="cell cell--topsoil"></div>
-          <div class="cell cell--topsoil"></div>
-          <div class="cell cell--topsoil"></div>
-          <div class="cell cell--topsoil"></div>
-          <div class="cell cell--topsoil"></div>
-          <!-- Row 1 -->
-          <div class="cell cell--medieval cell--dug"></div>
-          <div class="cell cell--medieval cell--dug"></div>
-          <div class="cell cell--medieval"></div>
-          <div class="cell cell--medieval"></div>
-          <div class="cell cell--medieval"></div>
-          <div class="cell cell--medieval"></div>
-          <!-- Row 2 -->
-          <div class="cell cell--iron-age"></div>
-          <div class="cell cell--iron-age cell--artefact" title="Pottery sherd visible">&#x1FAD9;</div>
-          <div class="cell cell--iron-age"></div>
-          <div class="cell cell--iron-age"></div>
-          <div class="cell cell--iron-age"></div>
-          <div class="cell cell--iron-age"></div>
-          <!-- Row 3 -->
-          <div class="cell cell--iron-age"></div>
-          <div class="cell cell--iron-age"></div>
-          <div class="cell cell--iron-age"></div>
-          <div class="cell cell--iron-age cell--feature" title="Post hole?"></div>
-          <div class="cell cell--iron-age"></div>
-          <div class="cell cell--iron-age"></div>
-          <!-- Row 4 — natural -->
-          <div class="cell cell--natural"></div>
-          <div class="cell cell--natural"></div>
-          <div class="cell cell--natural"></div>
-          <div class="cell cell--natural"></div>
-          <div class="cell cell--natural"></div>
-          <div class="cell cell--natural"></div>
-        </div>
-
+        <div class="stratigraphy-labels"><!-- populated by game.js --></div>
+        <div class="dig-grid"><!-- populated by game.js --></div>
         <div class="depth-scale">
           <span>0 cm</span>
           <span>20</span>
@@ -118,10 +75,17 @@
         </div>
       </div>
 
+      <div class="excavation-progress">
+        <div class="progress-track">
+          <div class="progress-fill"></div>
+        </div>
+        <span class="progress-label">0 / 20 cells</span>
+      </div>
+
       <div class="site-status">
-        <span class="status-item">Depth: <strong>22 cm</strong></span>
-        <span class="status-item">Context: <strong>002</strong></span>
-        <span class="status-item">Soil: <strong>Dark brown silty clay</strong></span>
+        <span class="status-item">Site: <strong class="js-site-name">—</strong></span>
+        <span class="status-item">Period: <strong class="js-site-period">—</strong></span>
+        <span class="status-item">Finds: <strong class="js-finds-count">0</strong></span>
       </div>
     </section>
 
